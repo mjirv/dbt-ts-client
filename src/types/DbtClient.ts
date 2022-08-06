@@ -7,7 +7,7 @@ interface IDbtClient {
         }
       | { operation: "serve"; port?: number }
   ) => Promise<string>;
-  ls: (params: {
+  ls: (params?: {
     resourceType?:
       | "metric"
       | "analysis"

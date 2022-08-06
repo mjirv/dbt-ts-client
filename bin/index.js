@@ -47,11 +47,13 @@ class DbtClient {
         };
         this.ls = (params) => {
             return this.execDbt("ls", [
-                ...(params.resourceType ? ["--resource-type", params.resourceType] : []),
-                ...(params.output ? ["--output", params.output] : []),
-                ...(params.outputKeys ? ["--output-keys", `"${params.outputKeys}"`] : []),
-                ...(params.select ? ["--select", params.select] : []),
-                ...(params.exclude ? ["--exclude", params.exclude] : []),
+                ...((params === null || params === void 0 ? void 0 : params.resourceType) ? ["--resource-type", params.resourceType] : []),
+                ...((params === null || params === void 0 ? void 0 : params.output) ? ["--output", params.output] : []),
+                ...((params === null || params === void 0 ? void 0 : params.outputKeys)
+                    ? ["--output-keys", `"${params.outputKeys}"`]
+                    : []),
+                ...((params === null || params === void 0 ? void 0 : params.select) ? ["--select", params.select] : []),
+                ...((params === null || params === void 0 ? void 0 : params.exclude) ? ["--exclude", params.exclude] : []),
             ]);
         };
         this.runOperation = (params) => __awaiter(this, void 0, void 0, function* () {

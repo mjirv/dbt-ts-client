@@ -84,7 +84,7 @@ export default class DbtClient implements IDbtClient {
     ]);
   };
 
-  ls = (params: {
+  ls = (params?: {
     resourceType?:
       | "metric"
       | "analysis"
@@ -102,11 +102,13 @@ export default class DbtClient implements IDbtClient {
     exclude?: string;
   }) => {
     return this.execDbt("ls", [
-      ...(params.resourceType ? ["--resource-type", params.resourceType] : []),
-      ...(params.output ? ["--output", params.output] : []),
-      ...(params.outputKeys ? ["--output-keys", `"${params.outputKeys}"`] : []),
-      ...(params.select ? ["--select", params.select] : []),
-      ...(params.exclude ? ["--exclude", params.exclude] : []),
+      ...(params?.resourceType ? ["--resource-type", params.resourceType] : []),
+      ...(params?.output ? ["--output", params.output] : []),
+      ...(params?.outputKeys
+        ? ["--output-keys", `"${params.outputKeys}"`]
+        : []),
+      ...(params?.select ? ["--select", params.select] : []),
+      ...(params?.exclude ? ["--exclude", params.exclude] : []),
     ]);
   };
 
