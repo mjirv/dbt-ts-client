@@ -1,0 +1,16 @@
+{
+  "name": "dbt_ts_client",
+  "version": "0.0.1-alpha",
+  "description": "A TypeScript client for dbt",
+  "main": "src/index.ts",
+  "repository": "git@github.com/mjirv/dbt-ts-client.git",
+  "author": "Michael Irvine",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^18.6.4",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
+}
