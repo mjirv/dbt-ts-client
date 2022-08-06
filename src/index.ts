@@ -65,6 +65,25 @@ export default class DbtClient implements IDbtClient {
     }
   };
 
+  docs = (
+    params:
+      | {
+          operation: "generate";
+          noCompile?: boolean;
+        }
+      | { operation: "serve"; port?: number }
+  ) => {
+    return this.execDbt("docs", [
+      params.operation,
+      ...(params.operation === "generate" && params.noCompile
+        ? ["--no-compile", "true"]
+        : []),
+      ...(params.operation === "serve" && params.port
+        ? ["--port", params.port.toString()]
+        : []),
+    ]);
+  };
+
   ls = (params: {
     resourceType?:
       | "metric"

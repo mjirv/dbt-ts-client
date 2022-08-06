@@ -1,4 +1,12 @@
 interface IDbtClient {
+  docs: (
+    params:
+      | {
+          operation: "generate";
+          noCompile?: boolean;
+        }
+      | { operation: "serve"; port?: number }
+  ) => Promise<string>;
   ls: (params: {
     resourceType?:
       | "metric"

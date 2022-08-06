@@ -34,6 +34,17 @@ class DbtClient {
                 throw new Error(error.stdout);
             }
         });
+        this.docs = (params) => {
+            return this.execDbt("docs", [
+                params.operation,
+                ...(params.operation === "generate" && params.noCompile
+                    ? ["--no-compile", "true"]
+                    : []),
+                ...(params.operation === "serve" && params.port
+                    ? ["--port", params.port.toString()]
+                    : []),
+            ]);
+        };
         this.ls = (params) => {
             return this.execDbt("ls", [
                 ...(params.resourceType ? ["--resource-type", params.resourceType] : []),
