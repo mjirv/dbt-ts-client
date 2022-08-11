@@ -1,5 +1,18 @@
 import { execFile } from "child_process";
 import { promisify } from "util";
+import {
+  DbtBuildParams,
+  DbtCompileParams,
+  DbtDocsParams,
+  DbtLsParams,
+  DbtRunOperationParams,
+  DbtRunParams,
+  DbtSeedParams,
+  DbtSnapshotParams,
+  DbtTestParams,
+  IDbtClient,
+} from "./types";
+import { toKebabCase } from "./utils/stringFormatting";
 
 export default class DbtClient implements IDbtClient {
   private dbtProjectPath: string;
@@ -20,6 +33,14 @@ export default class DbtClient implements IDbtClient {
   }
 
   private static exec = promisify(execFile);
+
+  private static mapParams = (params: Record<string, any> | undefined) =>
+    params
+      ? Object.entries(params).flatMap(([key, value]) => [
+          `--${toKebabCase(key)}`,
+          ...(typeof value === "boolean" ? [] : [value]),
+        ])
+      : [];
 
   private execDbt = async (
     operation:
@@ -65,15 +86,8 @@ export default class DbtClient implements IDbtClient {
     }
   };
 
-  docs = (
-    params:
-      | {
-          operation: "generate";
-          noCompile?: boolean;
-        }
-      | { operation: "serve"; port?: number }
-  ) => {
-    return this.execDbt("docs", [
+  docs = (params: DbtDocsParams) =>
+    this.execDbt("docs", [
       params.operation,
       ...(params.operation === "generate" && params.noCompile
         ? ["--no-compile", "true"]
@@ -82,44 +96,35 @@ export default class DbtClient implements IDbtClient {
         ? ["--port", params.port.toString()]
         : []),
     ]);
-  };
 
-  ls = (params?: {
-    resourceType?:
-      | "metric"
-      | "analysis"
-      | "seed"
-      | "snapshot"
-      | "source"
-      | "test"
-      | "model"
-      | "exposure"
-      | "default"
-      | "all";
-    output?: "json" | "name" | "path" | "selector";
-    outputKeys?: string; // TODO: we could probably type this
-    select?: string;
-    exclude?: string;
-  }) => {
-    return this.execDbt("ls", [
-      ...(params?.resourceType ? ["--resource-type", params.resourceType] : []),
-      ...(params?.output ? ["--output", params.output] : []),
-      ...(params?.outputKeys
-        ? ["--output-keys", `"${params.outputKeys}"`]
-        : []),
-      ...(params?.select ? ["--select", params.select] : []),
-      ...(params?.exclude ? ["--exclude", params.exclude] : []),
-    ]);
-  };
+  ls = (params?: DbtLsParams) =>
+    this.execDbt("ls", DbtClient.mapParams(params));
 
-  runOperation = async (params: {
-    operation: string;
-    args?: Record<string, string>;
-  }): Promise<string> => {
+  runOperation = (params: DbtRunOperationParams): Promise<string> => {
     const { operation, args } = params;
     return this.execDbt("run-operation", [
       operation,
       ...(args ? ["--args", JSON.stringify(args)] : []),
     ]);
   };
+
+  run = (params?: DbtRunParams) =>
+    this.execDbt("run", DbtClient.mapParams(params));
+
+  test = (params?: DbtTestParams) =>
+    this.execDbt("test", DbtClient.mapParams(params));
+
+  build = (params?: DbtBuildParams) =>
+    this.execDbt("build", DbtClient.mapParams(params));
+
+  compile = (params?: DbtCompileParams) =>
+    this.execDbt("compile", DbtClient.mapParams(params));
+
+  snapshot = (params?: DbtSnapshotParams) =>
+    this.execDbt("snapshot", DbtClient.mapParams(params));
+
+  seed = (params?: DbtSeedParams) =>
+    this.execDbt("seed", DbtClient.mapParams(params));
 }
+
+export * from "./types";

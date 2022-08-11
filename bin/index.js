@@ -1,4 +1,18 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,6 +25,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const util_1 = require("util");
+const stringFormatting_1 = require("./utils/stringFormatting");
 class DbtClient {
     constructor(props) {
         this.execDbt = (operation, args) => __awaiter(this, void 0, void 0, function* () {
@@ -34,35 +49,29 @@ class DbtClient {
                 throw new Error(error.stdout);
             }
         });
-        this.docs = (params) => {
-            return this.execDbt("docs", [
-                params.operation,
-                ...(params.operation === "generate" && params.noCompile
-                    ? ["--no-compile", "true"]
-                    : []),
-                ...(params.operation === "serve" && params.port
-                    ? ["--port", params.port.toString()]
-                    : []),
-            ]);
-        };
-        this.ls = (params) => {
-            return this.execDbt("ls", [
-                ...((params === null || params === void 0 ? void 0 : params.resourceType) ? ["--resource-type", params.resourceType] : []),
-                ...((params === null || params === void 0 ? void 0 : params.output) ? ["--output", params.output] : []),
-                ...((params === null || params === void 0 ? void 0 : params.outputKeys)
-                    ? ["--output-keys", `"${params.outputKeys}"`]
-                    : []),
-                ...((params === null || params === void 0 ? void 0 : params.select) ? ["--select", params.select] : []),
-                ...((params === null || params === void 0 ? void 0 : params.exclude) ? ["--exclude", params.exclude] : []),
-            ]);
-        };
-        this.runOperation = (params) => __awaiter(this, void 0, void 0, function* () {
+        this.docs = (params) => this.execDbt("docs", [
+            params.operation,
+            ...(params.operation === "generate" && params.noCompile
+                ? ["--no-compile", "true"]
+                : []),
+            ...(params.operation === "serve" && params.port
+                ? ["--port", params.port.toString()]
+                : []),
+        ]);
+        this.ls = (params) => this.execDbt("ls", DbtClient.mapParams(params));
+        this.runOperation = (params) => {
             const { operation, args } = params;
             return this.execDbt("run-operation", [
                 operation,
                 ...(args ? ["--args", JSON.stringify(args)] : []),
             ]);
-        });
+        };
+        this.run = (params) => this.execDbt("run", DbtClient.mapParams(params));
+        this.test = (params) => this.execDbt("test", DbtClient.mapParams(params));
+        this.build = (params) => this.execDbt("build", DbtClient.mapParams(params));
+        this.compile = (params) => this.execDbt("compile", DbtClient.mapParams(params));
+        this.snapshot = (params) => this.execDbt("snapshot", DbtClient.mapParams(params));
+        this.seed = (params) => this.execDbt("seed", DbtClient.mapParams(params));
         if (!props.dbtProjectPath)
             throw Error("no dbt project path given");
         this.dbtProjectPath = props.dbtProjectPath;
@@ -73,3 +82,10 @@ class DbtClient {
 }
 exports.default = DbtClient;
 DbtClient.exec = (0, util_1.promisify)(child_process_1.execFile);
+DbtClient.mapParams = (params) => params
+    ? Object.entries(params).flatMap(([key, value]) => [
+        `--${(0, stringFormatting_1.toKebabCase)(key)}`,
+        ...(typeof value === "boolean" ? [] : [value]),
+    ])
+    : [];
+__exportStar(require("./types"), exports);
