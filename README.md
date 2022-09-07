@@ -13,6 +13,6 @@ See `docs/` for full documentation.
 ```ts
 import DbtClient from 'dbt_ts_client'
 
-const client = new DbtClient('/path/to/dbt/project')
+const client = new DbtClient({ dbtProjectPath: '/path/to/dbt/project' })
 await client.run()
 ```
