@@ -1,3 +1,7 @@
+export interface DbtDepsParams {
+  vars?: string;
+}
+
 export interface DbtRunParams {
   select?: string;
   exclude?: string;
@@ -112,6 +116,7 @@ export interface DbtRunOperationParams {
 }
 
 export interface IDbtClient {
+  deps: (params?: DbtDepsParams) => Promise<string>;
   run: (params?: DbtRunParams) => Promise<string>;
   test: (params?: DbtTestParams) => Promise<string>;
   build: (params?: DbtBuildParams) => Promise<string>;

@@ -3,6 +3,7 @@ import { promisify } from "util";
 import {
   DbtBuildParams,
   DbtCompileParams,
+  DbtDepsParams,
   DbtDocsParams,
   DbtLsParams,
   DbtRunOperationParams,
@@ -107,6 +108,9 @@ export default class DbtClient implements IDbtClient {
       ...(args ? ["--args", JSON.stringify(args)] : []),
     ]);
   };
+
+  deps = (params?: DbtDepsParams) =>
+    this.execDbt("deps", DbtClient.mapParams(params))
 
   run = (params?: DbtRunParams) =>
     this.execDbt("run", DbtClient.mapParams(params));
