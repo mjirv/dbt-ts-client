@@ -20,17 +20,20 @@ export default class DbtClient implements IDbtClient {
   private profile?: string;
   private target?: string;
   private profilesDir?: string;
+  private quiet?: boolean;
   constructor(props: {
     dbtProjectPath: string;
     profile?: string;
     target?: string;
     profilesDir?: string;
+    quiet?: boolean;
   }) {
     if (!props.dbtProjectPath) throw Error("no dbt project path given");
     this.dbtProjectPath = props.dbtProjectPath;
     this.profile = props.profile;
     this.target = props.target;
     this.profilesDir = props.profilesDir;
+    this.quiet = props.quiet;
   }
 
   private static exec = promisify(execFile);
@@ -69,6 +72,7 @@ export default class DbtClient implements IDbtClient {
         "dbt",
         [
           ...(this.profilesDir ? ["--profiles-dir", this.profilesDir] : []),
+          ...(this.quiet ? ["--quiet"] : []),
           operation,
           ...(this.target ? ["--target", this.target] : []),
           ...(this.profile ? ["--profile", this.profile] : []),

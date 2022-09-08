@@ -1,6 +1,6 @@
 {
   "name": "dbt_ts_client",
-  "version": "0.0.1-alpha-rc.2",
+  "version": "0.0.1-alpha-rc.3",
   "description": "A TypeScript client for dbt",
   "main": "dist/index.js",
   "repository": "git@github.com/mjirv/dbt-ts-client.git",
